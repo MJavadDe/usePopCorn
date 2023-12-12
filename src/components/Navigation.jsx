@@ -1,6 +1,17 @@
-function Navigation({ query, setQuery, movies,setSearch }) {
+import { useEffect, useRef } from "react"
+import useKey from "../hooks/useKey"
 
+function Navigation({ query, setQuery, movies }) {
+  const inputEl = useRef()  
   
+
+  useKey("enter",keyHandler,"keypress")
+
+  function keyHandler(e) {
+    if (document.activeElement === inputEl.current ) return
+    inputEl.current.focus()
+    setQuery("")
+  }
   
   return (
     <nav className="nav-bar">
@@ -8,7 +19,8 @@ function Navigation({ query, setQuery, movies,setSearch }) {
           <span role="img">🍿</span>
           <h1>usePopcorn</h1>
         </div>
-        <input
+      <input
+        ref={inputEl}
           className="search"
           type="text"
           placeholder="Search movies..."
