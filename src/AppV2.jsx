@@ -79,33 +79,7 @@ export default function App() {
   const OMDB_KEY = 95748739;
 
 
-  const getMovie = async (movieQuery) => {
-    try {
-      setError("")
-      setisLoading(true)
-      let res = await fetch(`http://www.omdbapi.com/?apikey=${OMDB_KEY}&s=${movieQuery}`);      
-      if (!res.ok) {
-        throw new Error("something wrong has happend")
-      }
-    
-      res = await res.json();
-
-      if (res.Response  === "False") {
-        throw new Error("Movie was not found")
-      }
-
-      setMovies(res.Search);
-
-    }
-
-
-    catch (err){
-      setError(err.message)
-    }
-    finally {
-      setisLoading(false)
-    }
-  }
+  
 
   function handleAddWatched(newWatched) {
     setWatched(watched => [...watched.filter(elem => elem.imdbID !== newWatched.imdbID),newWatched])
@@ -124,14 +98,64 @@ export default function App() {
     setSelectedId(prevID => id === prevID ? null:id)
   }
 
+  
 
   useEffect(() => {
+    const EscCloseHandle = (e) => {
+      if (e.code === "Escape") {
+        handleClose()
+      }
+    }
+
+    document.addEventListener("keydown",EscCloseHandle)
+  
+    return () => {
+      document.removeEventListener("keydown",EscCloseHandle)
+    }
+  }, [])
+  
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const getMovie = async (movieQuery) => {
+      try {
+        setError("")
+        setisLoading(true)
+        let res = await fetch(`http://www.omdbapi.com/?apikey=${OMDB_KEY}&s=${movieQuery}`,{signal:controller.signal});      
+        if (!res.ok) {
+          throw new Error("something wrong has happend")
+        }
+      
+        res = await res.json();
+  
+        if (res.Response  === "False") {
+          throw new Error("Movie was not found")
+        }
+  
+        setMovies(res.Search);
+  
+      }
+  
+  
+      catch (err) {
+        if (err.name !== "AbortError") {
+          setError(err.message)
+        }
+      }
+      finally {
+        setisLoading(false)
+      }
+    }
     if (query.length<3) {
       setMovies([])
       setError("")
       return
     }
+    handleClose()
     getMovie(query)
+    return () => {
+      controller.abort()
+    }
 
   }, [query])
 
@@ -144,13 +168,13 @@ export default function App() {
 
   return (
     <>
-      <Navigation query={query} setQuery={setQuery} movies={movies} setSearch={getMovie} />
+      <Navigation query={query} setQuery={setQuery} movies={movies}/>
 
       <Main>
         <Box>
           {!isLoading && !error && <MovieList movies={movies} setSelectedId={selectId} />}
           {isLoading && <h1 className="loader">Loading...</h1>}
-          {error && !isLoading && <p>Movie was not found</p>}
+          {error && !isLoading && <p className="error">Movie was not found</p>}
         </Box>
         <Box>
           {selectedId ?

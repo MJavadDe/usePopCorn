@@ -12,7 +12,6 @@ function FoundMoviesBox({ movieId, handleClose ,onAddWatched,watched}) {
 
   const isWatched = watched.map(item => item.imdbID).includes(movieId)
   const OMDB_KEY = 95748739;
-  console.log(isWatched,watched);
 
 
   function handleAdd() {
@@ -40,7 +39,17 @@ function FoundMoviesBox({ movieId, handleClose ,onAddWatched,watched}) {
   
     getMovie()
     
+    
+    
   }, [movieId])
+  
+  useEffect(() => {
+    document.title = `Movie: ${title}`
+    return () => {
+      document.title = "UsePopCorn"
+    }
+    
+  }, [title])
   
 
 
@@ -48,7 +57,7 @@ function FoundMoviesBox({ movieId, handleClose ,onAddWatched,watched}) {
 
   return (
     <div className="details">
-      {isLoading ? <p>Is Loading...</p>:( <>
+      {isLoading ? <p className="loader">Is Loading...</p>:( <>
         <header>
         <button className="btn-back" onClick={handleClose}>&larr;</button>
         <img src={poster} alt={`poster of ${title}`} />

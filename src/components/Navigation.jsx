@@ -1,15 +1,5 @@
 function Navigation({ query, setQuery, movies,setSearch }) {
 
-
-  function onFocusSearch(e) {
-    window.addEventListener("keyup", (b) => {
-      if (b.key === "Enter") {
-        setSearch(e.target.value)
-
-      }
-    })
-  }
-
   
   
   return (
@@ -24,7 +14,6 @@ function Navigation({ query, setQuery, movies,setSearch }) {
           placeholder="Search movies..."
           value={query}
         onChange={(e) => setQuery(e.target.value)}
-        onFocus={(e) => onFocusSearch(e)}
         />
         <p className="num-results">
           Found <strong>{movies ? movies.length :0}</strong> results

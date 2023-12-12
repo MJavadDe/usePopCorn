@@ -1,6 +1,5 @@
 function MovieList({ movies,setSelectedId }) {
   
-console.log(movies);
 
 
   return (
